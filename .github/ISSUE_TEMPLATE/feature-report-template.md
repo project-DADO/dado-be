@@ -1,5 +1,5 @@
 ---
-name: "\01F52EFeature"
+name: "\U0001F52EFeature"
 about: 기능 개발 리포트 템플릿
 title: '[Feat] '
 labels: ''
