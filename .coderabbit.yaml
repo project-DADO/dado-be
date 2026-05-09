@@ -1,0 +1,24 @@
+language: "ko-KR"
+
+reviews:
+  profile: "chill"
+
+  path_filters:
+    - "src/**"
+    - "!**/tests/**"
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "develop"
+
+  tools:
+    guidelines:
+      - "의미를 알 수 없는 숫자(Magic Number)는 상수로 정의하여 사용하세요."
+      - "하나의 함수나 메서드가 너무 길면(약 20~30줄 이상) 책임을 분리하여 리팩토링할 것을 제안하세요."
+      - "디버깅용 console.log나 임시 출력 코드는 프로덕션 코드에 남기지 마세요."
+      - "에러 처리가 필요한 구간에는 적절한 예외 처리(try-catch 또는 전역 에러 핸들러)가 포함되었는지 확인하세요."
+
+chat:
+  auto_reply: true
