@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Calendar_Image {
+public class CalendarImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
