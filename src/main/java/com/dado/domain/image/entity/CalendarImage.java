@@ -70,4 +70,24 @@ public class CalendarImage {
     public enum OriginType {
         DIRECT, AI
     }
+
+    public static CalendarImage create(
+            Calendar calendar,
+            LocalDate recordDate,
+            String imageUrl,
+            OriginType originType
+    ) {
+        CalendarImage image = new CalendarImage();
+        image.calendar = calendar;
+        image.recordDate = recordDate;
+        image.imageUrl = imageUrl;
+        image.originType = originType;
+        return image;
+    }
+
+    // 이미지 url 업데이트 (override=true일 때)
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

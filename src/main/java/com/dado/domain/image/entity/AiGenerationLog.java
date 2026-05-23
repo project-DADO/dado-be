@@ -44,6 +44,9 @@ public class AiGenerationLog {
     @Column(name = "retry_count", nullable = false)
     private int retryCount;
 
+    @Column(name = "temp_image_url", nullable = false, length = 255)
+    private String tempImageUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -53,5 +56,23 @@ public class AiGenerationLog {
         if (this.retryCount == 0) {
             this.retryCount = 1;
         }
+    }
+
+    public static AiGenerationLog create(
+            Calendar calendar,
+            LocalDate recordDate,
+            String aiKeyword,
+            String aiDescription,
+            int retryCount,
+            String tempImageUrl
+    ) {
+        AiGenerationLog log = new AiGenerationLog();
+        log.calendar = calendar;
+        log.recordDate = recordDate;
+        log.aiKeyword = aiKeyword;
+        log.aiDescription = aiDescription;
+        log.retryCount = retryCount;
+        log.tempImageUrl = tempImageUrl;
+        return log;
     }
 }
