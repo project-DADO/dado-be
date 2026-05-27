@@ -39,33 +39,33 @@ public class CalendarImageService {
 
         Calendar calendar = findCalendar(request.getCalendarId());
 
-        calendarImageRepository
+        // 중복 날짜 체크
+        CalendarImage existingImage = calendarImageRepository
                 .findByCalendarIdAndRecordDate(request.getCalendarId(), request.getRecordDate())
-                .ifPresent(existing -> {
-                    if (!request.isOverride()) {
-                        throw new DuplicateImageException("이미 해당 날짜에 이미지가 존재합니다. 덮어쓰시겠습니까?");
-                    }
-                    // override=true → 기존 파일 삭제
-                    storageService.delete(existing.getImageUrl());
-                });
+                .orElse(null);
 
+        if (existingImage != null && !request.isOverride()) {
+            throw new DuplicateImageException("이미 해당 날짜에 이미지가 존재합니다. 덮어쓰시겠습니까?");
+        }
+
+        // 새 파일 먼저 업로드 (실패해도 기존 파일 안전)
         String imageUrl = storageService.upload(request.getImage());
 
-        // DB 저장 (override=true면 update, 없으면 insert)
-        CalendarImage savedImage = calendarImageRepository
-                .findByCalendarIdAndRecordDate(request.getCalendarId(), request.getRecordDate())
-                .map(existing -> {
-                    existing.updateImageUrl(imageUrl);
-                    return existing;
-                })
-                .orElseGet(() -> calendarImageRepository.save(
-                        CalendarImage.create(
-                                calendar,
-                                request.getRecordDate(),
-                                imageUrl,
-                                CalendarImage.OriginType.DIRECT
-                        )
-                ));
+        // 업로드 성공 후 기존 파일 삭제 및 DB 처리
+        if (existingImage != null) {
+            storageService.delete(existingImage.getImageUrl());
+            existingImage.updateImageUrl(imageUrl);
+            return CalendarImageResponse.from(existingImage);
+        }
+
+        CalendarImage savedImage = calendarImageRepository.save(
+                CalendarImage.create(
+                        calendar,
+                        request.getRecordDate(),
+                        imageUrl,
+                        CalendarImage.OriginType.DIRECT
+                )
+        );
 
         return CalendarImageResponse.from(savedImage);
     }
@@ -108,9 +108,13 @@ public class CalendarImageService {
 
         Calendar calendar = findCalendar(request.getCalendarId());
 
-        // 선택한 로그 조회
+        // logId + calendarId + recordDate 세 가지 동시 검증
         AiGenerationLog selectedLog = aiGenerationLogRepository
-                .findById(request.getLogId())
+                .findByIdAndCalendarIdAndRecordDate(
+                        request.getLogId(),
+                        request.getCalendarId(),
+                        request.getRecordDate()
+                )
                 .orElseThrow(() -> new NotFoundException("해당 AI 생성 기록을 찾을 수 없습니다."));
 
         // 중복 날짜 체크
