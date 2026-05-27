@@ -106,8 +106,6 @@ public class CalendarImageService {
     @Transactional
     public CalendarImageResponse confirmAiImage(AiImageConfirmRequest request) {
 
-        Calendar calendar = findCalendar(request.getCalendarId());
-
         // logId + calendarId + recordDate 세 가지 동시 검증
         AiGenerationLog selectedLog = aiGenerationLogRepository
                 .findByIdAndCalendarIdAndRecordDate(
@@ -136,7 +134,7 @@ public class CalendarImageService {
         // CalendarImage 저장
         CalendarImage savedImage = calendarImageRepository.save(
                 CalendarImage.create(
-                        calendar,
+                        selectedLog.getCalendar(),
                         request.getRecordDate(),
                         selectedLog.getTempImageUrl(),
                         CalendarImage.OriginType.AI
