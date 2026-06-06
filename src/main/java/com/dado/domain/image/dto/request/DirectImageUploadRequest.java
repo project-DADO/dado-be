@@ -3,10 +3,12 @@ package com.dado.domain.image.dto.request;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
+@Setter
 public class DirectImageUploadRequest {
 
     @NotNull(message = "calendarId는 필수입니다.")
